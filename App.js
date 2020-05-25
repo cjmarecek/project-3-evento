@@ -8,7 +8,11 @@ import { store, persistor } from './redux/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
+import { Stitch, AnonymousCredential } from 'mongodb-stitch-react-native-sdk';
+
 import MainDrawer from './navigation/MainDrawer';
+
+const stitchAppId = "keric-app-fouoc";
 
 export default function App() {
   return (
