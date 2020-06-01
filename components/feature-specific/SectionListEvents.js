@@ -17,6 +17,18 @@ const renderSectionHeader = ({ section }) => (
   </View>
 );
 
+
+
+const renderEmptyUpcomingEvents = () => {
+  return (
+    <View>
+      <Text>No planed Events at the moment</Text>
+    </View>
+  );
+};
+
+const SectionListEvents = props => {
+
 const sortUpcomingEvents = eventsInput => {
   const now = new Date().toISOString();
   const upcoming = eventsInput.filter(event => event.date > now);
@@ -30,16 +42,6 @@ const sortPastEvents = eventsInput => {
   const sorted = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
   return sorted;
 };
-
-const renderEmptyUpcomingEvents = () => {
-  return (
-    <View>
-      <Text>No planed Events at the moment</Text>
-    </View>
-  );
-};
-
-const SectionListEvents = props => {
   const sections = [
     { title: 'Upcoming', data: sortUpcomingEvents(props.events) },
     { title: 'Past', data: sortPastEvents(props.events) },

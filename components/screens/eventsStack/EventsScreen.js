@@ -19,7 +19,7 @@ class EventsScreen extends React.Component {
       place: event.place,
       date: event.date,
       description: event.description,
-      image: event.eventImage,
+      image: event.image,
     });
   };
 

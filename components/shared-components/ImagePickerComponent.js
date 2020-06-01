@@ -13,8 +13,8 @@ export default class ImagePickerComponent extends Component {
           title="Pick an image from camera roll"
           color='#70AB33'
         />
-        <Button onPress={this._takePhoto} title="Take a photo"           color='#70AB33'
- />
+        <Button onPress={this._takePhoto} title="Take a photo"           
+        color='#70AB33'/>
       </View>
     );
   }

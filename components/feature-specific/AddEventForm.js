@@ -22,7 +22,7 @@ export default class AddEventForm extends React.Component {
     place: '',
     date: new Date(),
     isFormValid: false,
-    image: null,
+    image: {}
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -47,7 +47,8 @@ export default class AddEventForm extends React.Component {
   };
 
   handleEventImageChange = (image) => {
-    this.setState({ image: image.uri });
+    console.log(image)
+    this.setState({ image });
   };
 
   handleTitleChange = (title) => {
@@ -120,10 +121,9 @@ export default class AddEventForm extends React.Component {
           <DateTimePickerComponent handleDateTime={this.handleDateTimeChange} />
           {image ? (
             <View style={styles.imageContainer}>
-              <Image source={{ uri: image }} style={styles.image} />
+              <Image source={{ uri: image.uri }} style={styles.image} />
             </View>
           ) : null}
-          <Text>{image}</Text>
           <ImagePickerComponent
             handleEventImageChange={this.handleEventImageChange}
           />

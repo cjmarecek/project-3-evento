@@ -24,7 +24,7 @@ export default Event = (props) => {
             <Text style={styles.dateTime}>{dateToString(props.date)}</Text>
           </View>
 
-          {props.eventImage ? (
+          {props.image ? (
             <Image
               source={{ uri: imageURL }}
               style={styles.headerImage}

@@ -71,7 +71,7 @@ const postEventSuccess = event => ({
 });
 const postEventFailure = error => ({
   type: POST_EVENT_FAILURE,
-  payload: { error },
+  payload: { error: error.message },
 });
 export const postEventReset = () => ({
   type: POST_EVENT_RESET,

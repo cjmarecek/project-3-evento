@@ -1,10 +1,7 @@
 [MarkdownCheatsheet](https://www.markdownguide.org/cheat-sheet/)
 
-## mongoDB database start: 
-`cd server`
-`mongod --dbpath=/data`
-
 ## Express server start:
+`cd server`
 `npm run dev`
 
 ## Metro Bundler start:
@@ -16,8 +13,8 @@ You can sign in in bottomo of the drawer as an admin to add, edit and delete eve
 * password: password
 
 # Event Entry
-* Title - Text
-* Start Date - DateTime
-* Description - Text
-* Place - Text
-* Image - Text - URL
+* Title: String (required)
+* Description: String
+* Place: String (required)
+* Date: Date (required)
+* Image: String <filename>

@@ -22,6 +22,7 @@ export const getEvents = async () => {
   try {
     const response = await fetch(`${API_URL}/api/events`);
     const json = await response.json();
+    console.log(json);
     return json;
   } catch (error) {
     throw new Error(error);
@@ -31,16 +32,15 @@ export const getEvents = async () => {
 export const postEvent = async (event) => {
   let formData = new FormData();
   if (event.image) {
-    let uriParts = event.image.split('.');
+    let uriParts = event.image.uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
     let name = uriParts[uriParts.length - 2];
-    formData.append('eventImage', {
-      uri: event.image,
+    formData.append('image', {
+      uri: event.image.uri,
       name: `${name}.${fileType}`,
       type: `image/${fileType}`,
     });
   }
-  console.log(event.image);
   formData.append('title', event.title);
   formData.append('description', event.description);
   formData.append('place', event.place);
@@ -84,7 +84,7 @@ export const putEvent = async (event) => {
   let name = uriParts[uriParts.length - 2];
 
   let formData = new FormData();
-  formData.append('eventImage', {
+  formData.append('image', {
     uri: event.image,
     name: `${name}.${fileType}`,
     type: `image/${fileType}`,
