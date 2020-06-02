@@ -18,9 +18,9 @@ app.use(helmet());
 app.use(cors({origin: process.env.CORS_ORIGIN}));
 app.use(express.json());  
 
+mongoose.set('useUnifiedTopology', true);
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
 });
 
 app.use("/authenticate", authentication);

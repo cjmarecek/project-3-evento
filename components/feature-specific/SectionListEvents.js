@@ -11,13 +11,13 @@ import ActivityIndicator from '../shared-components/ActivityIndicator';
 import PropTypes from 'prop-types';
 import containerBackground from '../../styles/sharedStyles'
 
+const SectionListEvents = props => {
+
 const renderSectionHeader = ({ section }) => (
   <View style={styles.headerContainer}>
     <Text style={styles.heading1}>{section.title}</Text>
   </View>
 );
-
-
 
 const renderEmptyUpcomingEvents = () => {
   return (
@@ -26,8 +26,6 @@ const renderEmptyUpcomingEvents = () => {
     </View>
   );
 };
-
-const SectionListEvents = props => {
 
 const sortUpcomingEvents = eventsInput => {
   const now = new Date().toISOString();

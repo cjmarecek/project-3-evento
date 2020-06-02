@@ -21,7 +21,7 @@ import {
 } from '../actions/actionTypes';
 
 const INITIAL_STATE = {
-  eventsList: { events: [], loading: false, error: null },
+  events: [], loading: false, error: null,
   newEvent: { event: null, loading: false, error: null },
   event: { event: {}, loading: false, error: null },
 };
@@ -33,22 +33,22 @@ export default eventsReducer = (state = INITIAL_STATE, action) => {
     case FETCH_EVENTS_BEGIN:
       return {
         ...state,
-        eventsList: { events: [], loading: true, error: null },
+        events: [], loading: true, error: null 
       };
     case FETCH_EVENTS_SUCCESS:
       return {
         ...state,
-        eventsList: { events: action.payload, loading: false, error: null },
+        events: action.payload, loading: false, error: null 
       };
     case FETCH_EVENTS_FAILURE:
       return {
         ...state,
-        eventsList: { events: [], loading: false, error: action.payload },
+        events: [], loading: false, error: action.payload 
       };
     case FETCH_EVENTS_RESET:
       return {
         ...state,
-        eventsList: { events: [], loading: false, error: null },
+        events: [], loading: false, error: null 
       };
 
     case POST_EVENT_BEGIN:

@@ -12,7 +12,7 @@ import { API_URL } from 'react-native-dotenv';
 import {IMAGE_BACKGROUND_COLOR} from '../../styles/sharedStyles'
 
 export default Event = (props) => {
-  let imageURL = API_URL + '/' + props.eventImage;
+  let imageURL = API_URL + '/api/events/uploads/' + props.image;
   return (
     <TouchableHighlight onPress={() => props.onSelectEvent(props)}>
       <View style={styles.eventContainer}>

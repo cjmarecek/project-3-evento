@@ -14,11 +14,13 @@ const GridFsStorage = require("multer-gridfs-storage");
 
 //init gfs
 let gfs;
+
 const conn = mongoose.createConnection(process.env.DATABASE_URL, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
   useFindAndModify: false 
 });
+mongoose.set('useUnifiedTopology', true);
+
 conn.once("open", () => {
   // init stream
   gfs = Grid(conn.db, mongoose.mongo);

@@ -13,7 +13,7 @@ import { API_URL } from 'react-native-dotenv';
 
 
 export default EventDetailScreen = ({ route, navigation }) => {
-  let imageURL = API_URL + '/' + route.params.image;
+  let imageURL = API_URL + '/api/events/uploads/' + route.params.image;
 
   return (
     <ScrollView

@@ -1,19 +1,18 @@
-import React from 'react';
-import { View, Text} from 'react-native';
-import { connect } from 'react-redux';
+import React from "react";
+import { PropTypes } from "prop-types";
+// Redux
+import { connect } from "react-redux";
 import {
   fetchEvents,
   fetchEventsReset,
-} from '../../../redux/actions/eventsActions';
+} from "../../../redux/actions/eventsActions";
 
-import SectionListEvents from '../../feature-specific/SectionListEvents';
+// Components
+import SectionListEvents from "../../feature-specific/SectionListEvents";
 
 class EventsScreen extends React.Component {
-  state = {
-    refreshing: false,
-  };
-  handleOnSelectEvent = event => {
-    this.props.navigation.push('Event Detail', {
+  handleOnSelectEvent = (event) => {
+    this.props.navigation.push("Event Detail", {
       _id: event._id,
       title: event.title,
       place: event.place,
@@ -24,11 +23,7 @@ class EventsScreen extends React.Component {
   };
 
   handleOnRefresh = () => {
-    this.setState({ refreshing: true }, () => {
-      this.props.fetchEventsReset();
-      this.props.fetchEvents();
-      this.setState({ refreshing: false });
-    });
+    this.props.fetchEvents();
   };
 
   componentDidMount() {
@@ -37,34 +32,34 @@ class EventsScreen extends React.Component {
   }
 
   render() {
-    
-    // if (this.props.error) {
-    //   return <Text>Error! {this.props.error.message}</Text>;
-    // } else {
-      return (
-        <View>
-          <SectionListEvents
-            events={this.props.events}
-            onSelectEvent={this.handleOnSelectEvent}
-            handleOnRefresh={this.handleOnRefresh}
-            loading={this.props.loading}
-            refreshing={this.state.refreshing}
-          />
-        </View>
-      );
-    // }
+    const { events, loading, error } = this.props;
+    return (
+      <SectionListEvents
+        events={events}
+        onSelectEvent={this.handleOnSelectEvent}
+        handleOnRefresh={this.handleOnRefresh}
+        loading={loading}
+        refreshing={loading}
+        error={error}
+      />
+    );
   }
 }
 
-const mapStateToProps = state => ({
-  events: state.events.eventsList.events,
-  loading: state.events.eventsList.loading,
-  error: state.events.eventsList.error,
+EventsScreen.propTypes = {
+  fetchEvents: PropTypes.func.isRequired,
+  fetchEventsReset: PropTypes.func.isRequired,
+  events: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.object,
+};
+
+const mapStateToProps = (state) => ({
+  events: state.events.events,
+  loading: state.events.loading,
+  error: state.events.error,
 });
 
-const mapDispatchToProps = dispatch => ({
-  fetchEvents: () => dispatch(fetchEvents()),
-  fetchEventsReset: () => dispatch(fetchEventsReset()),
-});
+const mapActionsToProps = { fetchEvents, fetchEventsReset };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventsScreen);
+export default connect(mapStateToProps, mapActionsToProps)(EventsScreen);
