@@ -58,6 +58,7 @@ export const createEvent = event => async dispatch => {
   try {
     const response = await postEvent(event);
     dispatch(postEventSuccess(response));
+    fetchEvents();
   } catch (error) {
     dispatch(postEventFailure(error));
   }
@@ -71,7 +72,7 @@ const postEventSuccess = event => ({
 });
 const postEventFailure = error => ({
   type: POST_EVENT_FAILURE,
-  payload: { error: error.message },
+  payload: error.message ,
 });
 export const postEventReset = () => ({
   type: POST_EVENT_RESET,
@@ -105,6 +106,7 @@ export const eraseEvent = id => async dispatch => {
   try {
     const response = await deleteEvent(id);
     dispatch(deleteEventSuccess(response));
+    fetchEvents()
   } catch (error) {
     dispatch(deleteEventFailure(error));
   }
@@ -114,9 +116,9 @@ const deleteEventBegin = () => ({
 });
 const deleteEventSuccess = event => ({
   type: DELETE_EVENT_SUCCESS,
-  payload: event,
+  payload: event._id,
 });
 const deleteEventFailure = error => ({
   type: DELETE_EVENT_FAILURE,
-  payload: { error },
+  payload: error.message,
 });

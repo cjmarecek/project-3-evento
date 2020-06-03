@@ -1,15 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import PropTypes from 'prop-types';
+import { API_URL } from "react-native-dotenv";
 
 import {
   dateToTimeString,
   dateToDateString,
 } from "../../shared-components/FormatDates";
+
 import {
   WINDOW_WIDTH,
   IMAGE_BACKGROUND_COLOR,
 } from "../../../styles/sharedStyles";
-import { API_URL } from "react-native-dotenv";
 
 const styles = StyleSheet.create({
   eventContainer: {
@@ -70,7 +72,8 @@ const styles = StyleSheet.create({
 });
 
 export default EventDetailScreen = ({ route, navigation }) => {
-  let imageURL = API_URL + "/api/events/uploads/" + route.params.image;
+  const { title, description, place, date, image } = route.params;
+  let imageURL = API_URL + "/api/events/uploads/" + image;
 
   return (
     <ScrollView
@@ -78,10 +81,10 @@ export default EventDetailScreen = ({ route, navigation }) => {
       contentContainerStyle={styles.eventContainer}
     >
       <View style={styles.headerContainer}>
-        <Text style={styles.heading1}>{route.params.title}</Text>
+        <Text style={styles.heading1}>{title}</Text>
       </View>
       <View style={styles.imageContainer}>
-        {route.params.image ? (
+        {image ? (
           <Image source={{ uri: imageURL }} style={styles.image} />
         ) : (
           <Image
@@ -90,18 +93,31 @@ export default EventDetailScreen = ({ route, navigation }) => {
           />
         )}
       </View>
-      <Text style={styles.place}>{route.params.place}</Text>
+      <Text style={styles.place}>{place}</Text>
       <View style={styles.dates}>
         <Text style={styles.dateTime}>
-          {dateToTimeString(route.params.date)}
+          {dateToTimeString(date)}
         </Text>
         <Text style={styles.dateTime}>
-          {dateToDateString(route.params.date)}
+          {dateToDateString(date)}
         </Text>
       </View>
-      {route.params.description ? (
-        <Text style={styles.description}>{route.params.description}</Text>
+      {description ? (
+        <Text style={styles.description}>{description}</Text>
       ) : null}
     </ScrollView>
   );
 };
+
+EventDetailScreen.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      place: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired,
+      image: PropTypes.string,
+      _id: PropTypes.string.isRequired
+    })
+  })
+}

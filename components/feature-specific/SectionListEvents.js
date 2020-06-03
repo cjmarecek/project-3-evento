@@ -6,10 +6,32 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import PropTypes from "prop-types";
+
+// Components
 import Event from "./Event";
 import ActivityIndicator from "../shared-components/ActivityIndicator";
-import PropTypes from "prop-types";
+
 import containerBackground from "../../styles/sharedStyles";
+const styles = StyleSheet.create({
+  eventsContainer: {
+    height: "100%",
+  },
+  headerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    height: 50,
+    marginHorizontal: 5,
+    paddingHorizontal: 5,
+    // borderWidth: 1
+    backgroundColor: "#ecf0f1",
+  },
+  heading1: {
+    fontSize: 36,
+    lineHeight: 41,
+    fontWeight: "bold",
+  },
+});
 
 const SectionListEvents = (props) => {
   const renderSectionHeader = ({ section }) => (
@@ -66,23 +88,3 @@ SectionListEvents.propTypes = {
 };
 
 export default SectionListEvents;
-
-const styles = StyleSheet.create({
-  eventsContainer: {
-    height: "100%",
-  },
-  headerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    height: 50,
-    marginHorizontal: 5,
-    paddingHorizontal: 5,
-    // borderWidth: 1
-    backgroundColor: "#ecf0f1",
-  },
-  heading1: {
-    fontSize: 36,
-    lineHeight: 41,
-    fontWeight: "bold",
-  },
-});

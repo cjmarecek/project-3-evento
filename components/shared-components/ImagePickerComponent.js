@@ -3,6 +3,14 @@ import { Button, StatusBar, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
+
 export default class ImagePickerComponent extends Component {
   render() {
     return (
@@ -62,11 +70,3 @@ export default class ImagePickerComponent extends Component {
     }
   };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});

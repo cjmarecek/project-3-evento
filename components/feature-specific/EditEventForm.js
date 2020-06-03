@@ -11,15 +11,19 @@ import {
   Image,
 } from "react-native";
 import PropTypes from "prop-types";
+import { API_URL } from "react-native-dotenv";
 
+// Components
+import ImagePickerComponent from "../shared-components/ImagePickerComponent";
 import DateTimePickerComponent from "../shared-components/DateTimePickerComponent";
 import { dateToString } from "../shared-components/FormatDates";
+import DeleteEventButton from "../base-components/DeleteEventButton";
+
+// Styles
 import {
   IMAGE_BACKGROUND_COLOR,
   containerBackground,
 } from "../../styles/sharedStyles";
-import { API_URL } from "react-native-dotenv";
-import ImagePickerComponent from "../shared-components/ImagePickerComponent";
 
 const styles = StyleSheet.create({
   container: {
@@ -51,6 +55,12 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: 5,
   },
+  dateTime: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
+  },
 });
 
 export default class EditEventForm extends React.Component {
@@ -81,23 +91,30 @@ export default class EditEventForm extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       this.state.title !== prevState.title ||
-      this.state.description !== prevState.description
+      this.state.description !== prevState.description ||
+      this.state.place !== prevState.place ||
+      this.state.image !== prevState.image ||
+      this.state.date !== prevState.date
     ) {
       this.validateForm();
     }
   }
 
   validateForm = () => {
+    const now = new Date().toISOString();
+    const { title, description, place, date } = this.state;
     if (
-      this.state.title.length >= 1 &&
-      this.state.description.length >= 1 &&
-      this.state.place.length >= 1
+      title.length >= 1 &&
+      description.length >= 1 &&
+      place.length >= 1 &&
+      date > now
     ) {
       this.setState({ isFormValid: true });
     } else {
       this.setState({ isFormValid: false });
     }
   };
+
   handleEventImageChange = (image) => {
     this.setState({ image: image.uri, imageURL: image.uri });
   };
@@ -119,23 +136,19 @@ export default class EditEventForm extends React.Component {
 
   handleDateTimeChange = (date) => {
     const isoDate = date.toISOString();
-    const now = new Date().toISOString();
-    this.setState(
-      {
-        date: isoDate,
-      },
-      () => {
-        if (isoDate > now) {
-          this.setState({ isFormValid: true });
-        } else {
-          this.setState({ isFormValid: false });
-        }
-      }
-    );
+    this.setState({ date: isoDate });
   };
 
   render() {
-    let { title, description, place, date, image, imageURL, isFormValid } = this.state;
+    let {
+      title,
+      description,
+      place,
+      date,
+      image,
+      imageURL,
+      isFormValid,
+    } = this.state;
 
     return (
       <KeyboardAvoidingView
@@ -164,14 +177,7 @@ export default class EditEventForm extends React.Component {
             placeholder="Place"
             style={styles.input}
           />
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              margin: 10,
-            }}
-          >
+          <View style={styles.dateTime}>
             <Text>{dateToString(date)}</Text>
           </View>
           <DateTimePickerComponent
@@ -198,29 +204,8 @@ export default class EditEventForm extends React.Component {
             color="#70AB33"
           />
           <View style={{ height: 20 }}></View>
-
-          <Button
-            onPress={() =>
-              Alert.alert(
-                "Delete Event: ",
-                `${title}`,
-                [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                  {
-                    text: "Delete",
-                    onPress: () => this.props.onDelete(),
-                  },
-                ],
-                { cancelable: false }
-              )
-            }
-            title="Delete Event"
-            color="#70AB33"
-          />
+          <DeleteEventButton title={title} onDelete={this.props.onDelete} />
+          <View style={{ height: 20 }}></View>
         </ScrollView>
       </KeyboardAvoidingView>
     );

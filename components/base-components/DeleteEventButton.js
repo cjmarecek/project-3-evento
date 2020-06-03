@@ -1,25 +1,34 @@
-import React from 'react';
-import { Alert, Button } from 'react-native';
+import React from "react";
+import PropTypes from 'prop-types';
+import { Alert, Button } from "react-native";
 
-export default DeleteEventButton = props => {
+export default DeleteEventButton = (props) => {
   return (
     <Button
       onPress={() =>
         Alert.alert(
-          'Delete Event: ',
+          "Delete Event: ",
           `${props.title}`,
           [
             {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
             },
-            { text: 'Delete', onPress: () => props.onDelete(props.id) },
+            {
+              text: "Delete",
+              onPress: () => props.onDelete(),
+            },
           ],
-          { cancelable: false },
+          { cancelable: false }
         )
       }
       title="Delete Event"
+      color="#70AB33"
     />
   );
 };
+DeleteEventButton.propTypes = {
+  onDelete: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired
+}

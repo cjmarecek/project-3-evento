@@ -1,60 +1,54 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import PropTypes from "prop-types";
 
-import AddEventForm from '../../feature-specific/AddEventForm';
-import { createEvent, postEventReset } from '../../../redux/actions/eventsActions';
-import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
+// Redux
+import { connect } from "react-redux";
+import {
+  createEvent,
+} from "../../../redux/actions/eventsActions";
+
+// Components
+import ActivityIndicator from "../../shared-components/ActivityIndicator";
+import AddEventForm from "../../feature-specific/AddEventForm";
+
+const styles = StyleSheet.create({
+  maybeRenderUploading: {
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+  },
+});
 
 const AddEventScreen = (props) => {
-  useEffect(() => {
-    props.postEventReset();
-  });
-
-  const handleSubmit = async (formState) => {
-    await props.createEvent(formState);
-    if (props.error) {
-      return;
-    } else {
-      props.navigation.navigate('Events');
-    }
+  const handleSubmit = (formState) => {
+    props.createEvent(formState);
+    props.navigation.navigate("Events");
   };
 
-  if (props.loading) {
-    return (
-      <View style={[StyleSheet.absoluteFill, styles.maybeRenderUploading]}>
-        <ActivityIndicator color="#fff" size="large" />
-      </View>
-    );
-  }
   if (props.error) {
-    console.log(props.error.message)
-    return (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Text>{`Something went wrong ${props.error.message}`}</Text>
-      </View>
-    );
-  }else {
+    return <Text>{props.error}</Text>
+  }
+  if (props.loading) {
+    return <ActivityIndicator />;
+  } else {
     return <AddEventForm onSubmit={handleSubmit} />;
   }
-  
+};
+
+AddEventScreen.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  createEvent: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
   createEvent: (formState) => dispatch(createEvent(formState)),
-  postEventReset: () => dispatch(postEventReset()),
 });
 
 const mapStateToProps = (state) => ({
-  loading: state.events.newEvent.loading,
-  error: state.events.newEvent.error,
-});
-
-const styles = StyleSheet.create({
-  maybeRenderUploading: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-  },
+  loading: state.events.loading,
+  error: state.events.error,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEventScreen);
