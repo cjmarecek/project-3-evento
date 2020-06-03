@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 export const BACKGROUD_COLOR = '#70AB33';
 export const ACTIVE_COLOR = 'white';
 export const INACTIVE_COLOR = 'white';
-export const BUTTON_PRESSED_COLOR = '#9AD162';
+export const BUTTON_PRESSED_COLOR = 'rgba(0,0,0,0.05)';
 export const IMAGE_BACKGROUND_COLOR = 'black'
 
 export const WINDOW_WIDTH = Dimensions.get('window').width;

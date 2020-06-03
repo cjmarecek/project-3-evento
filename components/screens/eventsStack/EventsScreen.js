@@ -1,5 +1,6 @@
 import React from "react";
 import { PropTypes } from "prop-types";
+
 // Redux
 import { connect } from "react-redux";
 import {
@@ -39,7 +40,6 @@ class EventsScreen extends React.Component {
         onSelectEvent={this.handleOnSelectEvent}
         handleOnRefresh={this.handleOnRefresh}
         loading={loading}
-        refreshing={loading}
         error={error}
       />
     );
@@ -51,7 +51,7 @@ EventsScreen.propTypes = {
   fetchEventsReset: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.object,
+  error: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({

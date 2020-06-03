@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Button,
   TextInput,
@@ -9,34 +9,72 @@ import {
   ScrollView,
   Alert,
   Image,
-} from 'react-native';
+} from "react-native";
+import PropTypes from "prop-types";
 
-import DateTimePickerComponent from '../shared-components/DateTimePickerComponent';
-import { dateToString } from '../shared-components/FormatDates';
-import { IMAGE_BACKGROUND_COLOR, containerBackground } from '../../styles/sharedStyles';
-import { API_URL } from 'react-native-dotenv';
-import ImagePickerComponent from '../shared-components/ImagePickerComponent';
+import DateTimePickerComponent from "../shared-components/DateTimePickerComponent";
+import { dateToString } from "../shared-components/FormatDates";
+import {
+  IMAGE_BACKGROUND_COLOR,
+  containerBackground,
+} from "../../styles/sharedStyles";
+import { API_URL } from "react-native-dotenv";
+import ImagePickerComponent from "../shared-components/ImagePickerComponent";
 
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "black",
+    minWidth: 100,
+    marginTop: 20,
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 3,
+  },
+  image: {
+    alignItems: "center",
+    width: "95%",
+    margin: 1,
+    // borderWidth: 1,
+    resizeMode: "contain",
+    backgroundColor: IMAGE_BACKGROUND_COLOR,
+    height: 250,
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+    marginHorizontal: 5,
+  },
+});
 
 export default class EditEventForm extends React.Component {
   state = {
-    title: '',
-    description: '',
-    place: '',
+    title: "",
+    description: "",
+    place: "",
     date: new Date(),
     isFormValid: true,
     image: null,
+    imageURL: null,
   };
 
   componentDidMount() {
-    let imageURL = API_URL + '/' + this.props.image;
-
+    const { title, description, place, date, image } = this.props;
+    image
+      ? this.setState({ imageURL: API_URL + "/api/events/uploads/" + image })
+      : null;
     this.setState({
-      title: this.props.title,
-      description: this.props.description,
-      place: this.props.place,
-      date: this.props.date,
-      image: imageURL,
+      title,
+      description,
+      place,
+      date,
+      image,
     });
   }
 
@@ -61,7 +99,7 @@ export default class EditEventForm extends React.Component {
     }
   };
   handleEventImageChange = (image) => {
-    this.setState({ image: image.uri });
+    this.setState({ image: image.uri, imageURL: image.uri });
   };
 
   handleTitleChange = (title) => {
@@ -76,7 +114,6 @@ export default class EditEventForm extends React.Component {
   };
 
   handleSubmit = () => {
-    console.log(this.state);
     this.props.onSubmit(this.state);
   };
 
@@ -93,12 +130,12 @@ export default class EditEventForm extends React.Component {
         } else {
           this.setState({ isFormValid: false });
         }
-      },
+      }
     );
   };
 
   render() {
-    let { image } = this.state;
+    let { title, description, place, date, image, imageURL, isFormValid } = this.state;
 
     return (
       <KeyboardAvoidingView
@@ -110,35 +147,35 @@ export default class EditEventForm extends React.Component {
         <ScrollView>
           <TextInput
             onChangeText={this.handleTitleChange}
-            value={this.state.title}
+            value={title}
             placeholder="Title of the Event.."
             style={styles.input}
           />
           <TextInput
             onChangeText={this.handleDescriptionChange}
-            value={this.state.description}
+            value={description}
             placeholder="Please describe the event."
             style={styles.input}
             multiline={true}
           />
           <TextInput
             onChangeText={this.handlePlaceChange}
-            value={this.state.place}
+            value={place}
             placeholder="Place"
             style={styles.input}
           />
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               margin: 10,
             }}
           >
-            <Text>{dateToString(this.state.date)}</Text>
+            <Text>{dateToString(date)}</Text>
           </View>
           <DateTimePickerComponent
-            date={this.state.date}
+            date={date}
             handleDateTime={this.handleDateTimeChange}
           />
           <ImagePickerComponent
@@ -146,39 +183,43 @@ export default class EditEventForm extends React.Component {
           />
           {image ? (
             <View style={styles.imageContainer}>
-              <Image source={{ uri: image }} style={styles.image} />
+              <Image source={{ uri: imageURL }} style={styles.image} />
             </View>
-          ) : null}
+          ) : (
+            <Image
+              source={require("../../assets/image-not-available.png")}
+              style={styles.image}
+            />
+          )}
           <Button
             onPress={this.handleSubmit}
             title="Submit"
-            disabled={!this.state.isFormValid}
-            color='#70AB33'
+            disabled={!isFormValid}
+            color="#70AB33"
           />
           <View style={{ height: 20 }}></View>
 
           <Button
             onPress={() =>
               Alert.alert(
-                'Delete Event: ',
-                `${this.state.title}`,
+                "Delete Event: ",
+                `${title}`,
                 [
                   {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
                   },
                   {
-                    text: 'Delete',
+                    text: "Delete",
                     onPress: () => this.props.onDelete(),
                   },
                 ],
-                { cancelable: false },
+                { cancelable: false }
               )
             }
             title="Delete Event"
-            color='#70AB33'
-
+            color="#70AB33"
           />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -186,34 +227,12 @@ export default class EditEventForm extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: 'black',
-    minWidth: 100,
-    marginTop: 20,
-    marginHorizontal: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 3,
-  },
-  image: {
-    alignItems: 'center',
-    width: '95%',
-    margin: 1,
-    // borderWidth: 1,
-    resizeMode: 'contain',
-    backgroundColor: IMAGE_BACKGROUND_COLOR,
-    height: 250, 
-  },
-  imageContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical : 20,
-    marginHorizontal : 5,
-  },
-});
+EditEventForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  place: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  image: PropTypes.string,
+};

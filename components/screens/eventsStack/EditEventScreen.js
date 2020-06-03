@@ -1,16 +1,17 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import {
-  fetchEvent,
-  updateEvent,
-  fetchEvents,
-  eraseEvent,
-  fetchEventReset,
-} from '../../../redux/actions/eventsActions';
-import EditEventForm from '../../feature-specific/EditEventForm';
+import React from "react";
+import { Text } from 'react-native';
+import PropTypes from "prop-types";
 
-const EditEventScreen = props => {
-  const handleSubmit = formState => {
+// Redux
+import { connect } from "react-redux";
+import { updateEvent, eraseEvent } from "../../../redux/actions/eventsActions";
+
+// Components
+import EditEventForm from "../../feature-specific/EditEventForm";
+import ActivityIndicator from "../../shared-components/ActivityIndicator";
+
+const EditEventScreen = (props) => {
+  const handleSubmit = (formState) => {
     props.updateEvent({
       id: props.route.params._id,
       title: formState.title,
@@ -19,16 +20,19 @@ const EditEventScreen = props => {
       date: formState.date,
       image: formState.image,
     });
-    props.fetchEvents();
-    props.navigation.navigate('Events');
+    props.navigation.navigate("Events");
   };
 
   const handleDelete = () => {
     props.eraseEvent(props.route.params._id);
-    props.fetchEvents();
-    props.navigation.navigate('Events');
+    props.navigation.navigate("Events");
   };
-
+  if (props.error) {
+    return <Text>{props.error}</Text>
+  }
+  if (props.loading) {
+    return <ActivityIndicator />;
+  }
   return (
     <EditEventForm
       onSubmit={handleSubmit}
@@ -42,17 +46,21 @@ const EditEventScreen = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  loading: state.events.event.loading,
-  error: state.events.event.error,
+EditEventScreen.propTypes = {
+  updateEvent: PropTypes.func.isRequired,
+  eraseEvent: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+};
+
+const mapStateToProps = (state) => ({
+  loading: state.events.loading,
+  error: state.events.error,
 });
 
-const mapDispatchToProps = dispatch => ({
-  fetchEvent: id => dispatch(fetchEvent(id)),
-  fetchEventReset: () => dispatch(fetchEventReset()),
-  fetchEvents: () => dispatch(fetchEvents()),
-  updateEvent: event => dispatch(updateEvent(event)),
-  eraseEvent: id => dispatch(eraseEvent(id)),
+const mapDispatchToProps = (dispatch) => ({
+  updateEvent: (event) => dispatch(updateEvent(event)),
+  eraseEvent: (id) => dispatch(eraseEvent(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditEventScreen);

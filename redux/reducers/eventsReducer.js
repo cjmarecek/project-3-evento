@@ -22,8 +22,8 @@ import {
 
 const INITIAL_STATE = {
   events: [], loading: false, error: null,
-  newEvent: { event: null, loading: false, error: null },
-  event: { event: {}, loading: false, error: null },
+  event: {},
+  newEvent: { event: null, loading: false, error: null }
 };
 
 // const merge = (prev, next) => Object.assign({}, prev, next);
@@ -73,41 +73,20 @@ export default eventsReducer = (state = INITIAL_STATE, action) => {
         newEvent: { event: null, loading: false, error: null },
       };
 
-    case FETCH_EVENT_BEGIN:
-      return {
-        ...state,
-        event: { event: null, loading: true, error: null },
-      };
-    case FETCH_EVENT_SUCCESS:
-      return {
-        ...state,
-        event: { event: action.payload, loading: false, error: null },
-      };
-    case FETCH_EVENT_FAILURE:
-      return {
-        ...state,
-        event: { event: null, loading: false, error: action.payload },
-      };
-    case FETCH_EVENT_RESET:
-      return {
-        ...state,
-        event: { event: null, loading: false, error: null },
-      };
-
     case UPDATE_EVENT_BEGIN:
       return {
         ...state,
-        event: { event: {}, loading: true, error: null },
+        event: {}, loading: true, error: null ,
       };
     case UPDATE_EVENT_SUCCESS:
       return {
         ...state,
-        event: { event: action.payload, loading: false, error: null },
+        event: action.payload, loading: false, error: null ,
       };
     case UPDATE_EVENT_FAILURE:
       return {
         ...state,
-        event: { event: {}, loading: false, error: action.payload },
+        event: {}, loading: false, error: action.payload,
       };
 
     case DELETE_EVENT_BEGIN:

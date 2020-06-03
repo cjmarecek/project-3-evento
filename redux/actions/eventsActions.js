@@ -77,31 +77,6 @@ export const postEventReset = () => ({
   type: POST_EVENT_RESET,
 });
 
-//fetch event actions
-export const fetchEvent = id => async dispatch => {
-  dispatch(fetchEventBegin());
-  try {
-    const response = await getEvent(id);
-    dispatch(fetchEventSuccess(response));
-  } catch (error) {
-    dispatch(fetchEventFailure(error));
-  }
-};
-const fetchEventBegin = () => ({
-  type: FETCH_EVENT_BEGIN,
-});
-const fetchEventSuccess = event => ({
-  type: FETCH_EVENT_SUCCESS,
-  payload: event,
-});
-const fetchEventFailure = error => ({
-  type: FETCH_EVENT_FAILURE,
-  payload: { error },
-});
-export const fetchEventReset = () => ({
-  type: FETCH_EVENT_RESET,
-});
-
 //update Event actions
 export const updateEvent = event => async dispatch => {
   dispatch(updateEventBegin());
@@ -121,7 +96,7 @@ const updateEventSuccess = event => ({
 });
 const updateEventFailure = error => ({
   type: UPDATE_EVENT_FAILURE,
-  payload: { error },
+  payload:  error.message ,
 });
 
 //delete Event actions

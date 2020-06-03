@@ -31,21 +31,22 @@ export const getEvents = async () => {
 
 export const postEvent = async (event) => {
   let formData = new FormData();
-  if (event.image) {
-    let uriParts = event.image.uri.split('.');
-    let fileType = uriParts[uriParts.length - 1];
-    let name = uriParts[uriParts.length - 2];
-    formData.append('image', {
-      uri: event.image.uri,
-      name: `${name}.${fileType}`,
-      type: `image/${fileType}`,
-    });
-  }
   formData.append('title', event.title);
   formData.append('description', event.description);
   formData.append('place', event.place);
   formData.append('date', event.date);
-
+  if (event.image) {
+    let uriParts = event.image.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+    let name = uriParts[uriParts.length - 2];
+    formData.append('image', {
+      uri: event.image,
+      name: `${name}.${fileType}`,
+      type: `image/${fileType}`,
+    });
+  }else{
+    formData.append('image', null)
+  }
   let options = {
     method: 'POST',
     body: formData,
@@ -79,21 +80,22 @@ export const getEvent = async (id) => {
 };
 
 export const putEvent = async (event) => {
-  let uriParts = event.image.split('.');
-  let fileType = uriParts[uriParts.length - 1];
-  let name = uriParts[uriParts.length - 2];
-
   let formData = new FormData();
-  formData.append('image', {
-    uri: event.image,
-    name: `${name}.${fileType}`,
-    type: `image/${fileType}`,
-  });
   formData.append('title', event.title);
   formData.append('description', event.description);
   formData.append('place', event.place);
   formData.append('date', event.date);
-
+  if (event.image){
+    let uriParts = event.image.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+    let name = uriParts[uriParts.length - 2];
+    formData.append('image', {
+      uri: event.image,
+      name: `${name}.${fileType}`,
+      type: `image/${fileType}`,
+    });
+  } 
+  
   let options = {
     method: 'PUT',
     body: formData,

@@ -1,48 +1,40 @@
-import React from 'react';
+import React from "react";
 import {
   SectionList,
   Text,
   SafeAreaView,
   StyleSheet,
   View,
-} from 'react-native';
-import Event from './Event';
-import ActivityIndicator from '../shared-components/ActivityIndicator';
-import PropTypes from 'prop-types';
-import containerBackground from '../../styles/sharedStyles'
+} from "react-native";
+import Event from "./Event";
+import ActivityIndicator from "../shared-components/ActivityIndicator";
+import PropTypes from "prop-types";
+import containerBackground from "../../styles/sharedStyles";
 
-const SectionListEvents = props => {
-
-const renderSectionHeader = ({ section }) => (
-  <View style={styles.headerContainer}>
-    <Text style={styles.heading1}>{section.title}</Text>
-  </View>
-);
-
-const renderEmptyUpcomingEvents = () => {
-  return (
-    <View>
-      <Text>No planed Events at the moment</Text>
+const SectionListEvents = (props) => {
+  const renderSectionHeader = ({ section }) => (
+    <View style={styles.headerContainer}>
+      <Text style={styles.heading1}>{section.title}</Text>
     </View>
   );
-};
 
-const sortUpcomingEvents = eventsInput => {
-  const now = new Date().toISOString();
-  const upcoming = eventsInput.filter(event => event.date > now);
-  const sorted = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-  return sorted;
-};
+  const getSortedUpcomingEvents = (events) => {
+    if (events === null || events.length === 0) return [];
+    return events
+      .filter((event) => event.date > new Date().toISOString())
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  };
 
-const sortPastEvents = eventsInput => {
-  const now = new Date().toISOString();
-  const upcoming = eventsInput.filter(event => event.date < now);
-  const sorted = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-  return sorted;
-};
+  const getSortedPastEvents = (events) => {
+    if (events === null || events.length === 0) return [];
+    return events
+      .filter((event) => event.date < new Date().toISOString())
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  };
+
   const sections = [
-    { title: 'Upcoming', data: sortUpcomingEvents(props.events) },
-    { title: 'Past', data: sortPastEvents(props.events) },
+    { title: "Upcoming", data: getSortedUpcomingEvents(props.events) },
+    { title: "Past", data: getSortedPastEvents(props.events) },
   ];
 
   return (
@@ -51,14 +43,13 @@ const sortPastEvents = eventsInput => {
         <ActivityIndicator />
       ) : (
         <SectionList
-          keyExtractor={item => item._id}
+          keyExtractor={(item) => item._id}
           sections={sections}
           renderItem={({ item }) => (
             <Event {...item} onSelectEvent={props.onSelectEvent} />
           )}
           renderSectionHeader={renderSectionHeader}
-          ListEmptyComponent={renderEmptyUpcomingEvents}
-          refreshing={props.refreshing}
+          refreshing={props.loading}
           onRefresh={() => props.handleOnRefresh()}
         />
       )}
@@ -67,27 +58,31 @@ const sortPastEvents = eventsInput => {
 };
 
 SectionListEvents.propTypes = {
-  contacts: PropTypes.array,
+  events: PropTypes.array.isRequired,
+  onSelectEvent: PropTypes.func.isRequired,
+  handleOnRefresh: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
 };
 
 export default SectionListEvents;
 
 const styles = StyleSheet.create({
   eventsContainer: {
-    height: '100%',
+    height: "100%",
   },
   headerContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     height: 50,
     marginHorizontal: 5,
     paddingHorizontal: 5,
     // borderWidth: 1
-    backgroundColor: '#ecf0f1',
+    backgroundColor: "#ecf0f1",
   },
   heading1: {
     fontSize: 36,
     lineHeight: 41,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

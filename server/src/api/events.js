@@ -147,21 +147,23 @@ router.put("/:eventId", upload.single("image"), async (req, res, next) => {
           description: req.body.description,
           place: req.body.place,
           date: req.body.date,
-          image: req.body.image ? req.body.image : null,
+          image: null,
         }
       );
       res.json(updatedEvent);
     }
-    // if there is image upload
+    // if image upload, check if it's the same image
     else if (req.file && event.image) {
-      gfs.remove(
-        { filename: event.image, root: "uploads" },
-        (error, gridStore) => {
-          if (error) {
-            next(error);
+      if(req.file.originalname !== event.image){
+        gfs.remove(
+          { filename: event.image, root: "uploads" },
+          (error, gridStore) => {
+            if (error) {
+              next(error);
+            }
           }
-        }
-      );
+        );
+      }
       const updatedEvent = await EventEntry.findByIdAndUpdate(
         {
           _id: req.params.eventId,
@@ -175,8 +177,9 @@ router.put("/:eventId", upload.single("image"), async (req, res, next) => {
         }
       );
       res.json(updatedEvent);
-      // there is no image in the event 
-    } else {
+    } 
+    // if event without image updating with image
+    else {
       const updatedEvent = await EventEntry.findByIdAndUpdate(
         {
           _id: req.params.eventId,
