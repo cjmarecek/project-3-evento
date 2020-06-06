@@ -1,8 +1,6 @@
 // @router /api/events/
-// @desc Return, post, upload and delete events,
-const { Router } = require("express");
+// @desc Fetch, post, upload and delete events, get and delete file
 const EventEntry = require("../models/EventEntry");
-const router = Router();
 const mongoose = require("mongoose");
 
 // @desc File upload imports
@@ -12,15 +10,14 @@ const path = require("path");
 const Grid = require("gridfs-stream");
 const GridFsStorage = require("multer-gridfs-storage");
 
-//init gfs
-let gfs;
-
 const conn = mongoose.createConnection(process.env.DATABASE_URL, {
   useNewUrlParser: true,
-  useFindAndModify: false 
+  useFindAndModify: false,
 });
-mongoose.set('useUnifiedTopology', true);
+mongoose.set("useUnifiedTopology", true);
 
+//init gfs
+let gfs;
 conn.once("open", () => {
   // init stream
   gfs = Grid(conn.db, mongoose.mongo);
@@ -47,22 +44,22 @@ const storage = new GridFsStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+exports.upload = multer({ storage: storage });
 
 // @route GET /
 // @desc Returns all events
-router.get("/", async (req, res, next) => {
+exports.getAllEvents = async (req, res, next) => {
   try {
     const events = await EventEntry.find();
     res.json(events);
   } catch (error) {
     next(error);
   }
-});
+};
 
 // @route GET /uploads
 // @desc  Display all files in JSON
-router.get("/uploads", (req, res) => {
+exports.getAllFiles = (req, res) => {
   gfs.files.find().toArray((err, files) => {
     // Check if files
     if (!files || files.length === 0) {
@@ -74,11 +71,11 @@ router.get("/uploads", (req, res) => {
     // Files exist
     return res.json(files);
   });
-});
+};
 
 // @route GET /uploads/:filename
 // @desc Displays Image
-router.get("/uploads/:filename", (req, res) => {
+exports.displayImage = (req, res) => {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if file
     if (!file || file.length === 0) {
@@ -97,43 +94,44 @@ router.get("/uploads/:filename", (req, res) => {
       });
     }
   });
-});
+};
 
 // @route POST /
 // @desc Saves event to DB
-router.post("/", upload.single("image"), async (req, res, next) => {
-  try {
-    const eventEntry = new EventEntry({
-      title: req.body.title,
-      description: req.body.description,
-      place: req.body.place,
-      date: req.body.date,
-      image: req.file ? req.file.filename : null,
-    });
-    const createdEntry = await eventEntry.save();
-    res.json(createdEntry);
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      res.status(422);
+exports.postOneEvent = async (req, res, next) => {
+    try {
+      const eventEntry = new EventEntry({
+        title: req.body.title,
+        description: req.body.description,
+        place: req.body.place,
+        date: req.body.date,
+        image: req.file ? req.file.filename : null,
+      });
+      const createdEntry = await eventEntry.save();
+      res.json(createdEntry);
+    } catch (error) {
+      if (error.name === "ValidationError") {
+        res.status(422);
+      }
+      next(error);
     }
-    next(error);
   }
-});
 
 // @route GET /:eventId
 // @desc Fetches one event
-router.get("/:eventId", async (req, res, next) => {
+exports.getOneEvent = async (req, res, next) => {
   try {
     const event = await EventEntry.findById({ _id: req.params.eventId });
     res.json(event);
   } catch (error) {
     next(error);
   }
-});
+};
 
 // @route PUT /:eventId
 // @desc Updates event with or without image
-router.put("/:eventId", upload.single("image"), async (req, res, next) => {
+// upload.single("image"),
+exports.updateEvent = async (req, res, next) => {
   try {
     const event = await EventEntry.findById({ _id: req.params.eventId });
     // if no image upload
@@ -154,7 +152,7 @@ router.put("/:eventId", upload.single("image"), async (req, res, next) => {
     }
     // if image upload, check if it's the same image
     else if (req.file && event.image) {
-      if(req.file.originalname !== event.image){
+      if (req.file.originalname !== event.image) {
         gfs.remove(
           { filename: event.image, root: "uploads" },
           (error, gridStore) => {
@@ -177,7 +175,7 @@ router.put("/:eventId", upload.single("image"), async (req, res, next) => {
         }
       );
       res.json(updatedEvent);
-    } 
+    }
     // if event without image updating with image
     else {
       const updatedEvent = await EventEntry.findByIdAndUpdate(
@@ -197,11 +195,11 @@ router.put("/:eventId", upload.single("image"), async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
 // @route DELETE /uploads/:filename
 // @desc  Deletes file
-router.delete("/uploads/:filename", (req, res, next) => {
+exports.deleteFile = (req, res, next) => {
   gfs.remove(
     { filename: req.params.filename, root: "uploads" },
     (err, gridStore) => {
@@ -211,11 +209,11 @@ router.delete("/uploads/:filename", (req, res, next) => {
       res.status(200).json({ message: "file deleted" });
     }
   );
-});
+};
 
 // @route DELETE /:eventId
 // @desc Deletes event as well as it's image
-router.delete("/:eventId", async (req, res, next) => {
+exports.deleteEvent = async (req, res, next) => {
   try {
     const event = await EventEntry.findById({ _id: req.params.eventId });
     if (event.image) {
@@ -235,6 +233,4 @@ router.delete("/:eventId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
-
-module.exports = router;
+};

@@ -1,3 +1,15 @@
+const jwt = require('jsonwebtoken');
+
+const checkAuth = (req,  res, next) => {
+  try {
+    const decoded = jwt.verify(req.body.token, process.env.JWT_KEY)
+    req.userData = decoded;
+    next()
+  } catch (error) {
+    res.status(401).json({ message: "Auth Failed"})
+  }
+}
+
 // not found, general one middleware
 const notFound = (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
@@ -16,7 +28,10 @@ const errorHandler = (error, req, res, next) => {
   });
 };
 
+
+
 module.exports = {
   notFound,
   errorHandler,
+  checkAuth
 };
