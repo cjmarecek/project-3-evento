@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 // const requiredNumber = { type: Number, required: true };
 const requiredString = { type: String, required: true };
-const eventEntrySchema = new Schema(
+const eventSchema = new Schema(
   {
     title: requiredString,
     description: String,
@@ -18,17 +18,6 @@ const eventEntrySchema = new Schema(
   }
 );
 
-const EventEntry = mongoose.model("EventEntry", eventEntrySchema);
+const Event = mongoose.model("Event", eventSchema);
 
-module.exports = EventEntry;
-
-// latitude: {
-//   ...requiredNumber,
-//   min: -90,
-//   max: 90,
-// },
-// longiture: {
-//   ...requiredNumber,
-//   min: -180,
-//   max: 180,
-// },
+module.exports = Event;

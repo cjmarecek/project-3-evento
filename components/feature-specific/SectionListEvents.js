@@ -84,7 +84,7 @@ SectionListEvents.propTypes = {
   onSelectEvent: PropTypes.func.isRequired,
   handleOnRefresh: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.string,
+  error: PropTypes.object,
 };
 
 export default SectionListEvents;

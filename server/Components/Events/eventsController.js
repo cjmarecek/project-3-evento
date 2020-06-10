@@ -1,6 +1,4 @@
-// @router /api/events/
-// @desc Fetch, post, upload and delete events, get and delete file
-const EventEntry = require("../models/EventEntry");
+const Event = require("./eventModel");
 const mongoose = require("mongoose");
 
 // @desc File upload imports
@@ -44,21 +42,17 @@ const storage = new GridFsStorage({
   },
 });
 
-exports.upload = multer({ storage: storage });
+exports.fileUpload = multer({ storage: storage });
 
-// @route GET /
-// @desc Returns all events
 exports.getAllEvents = async (req, res, next) => {
   try {
-    const events = await EventEntry.find();
+    const events = await Event.find();
     res.json(events);
   } catch (error) {
     next(error);
   }
 };
 
-// @route GET /uploads
-// @desc  Display all files in JSON
 exports.getAllFiles = (req, res) => {
   gfs.files.find().toArray((err, files) => {
     // Check if files
@@ -67,14 +61,11 @@ exports.getAllFiles = (req, res) => {
         err: "No files exist",
       });
     }
-
     // Files exist
     return res.json(files);
   });
 };
 
-// @route GET /uploads/:filename
-// @desc Displays Image
 exports.displayImage = (req, res) => {
   gfs.files.findOne({ filename: req.params.filename }, (err, file) => {
     // Check if file
@@ -96,19 +87,17 @@ exports.displayImage = (req, res) => {
   });
 };
 
-// @route POST /
-// @desc Saves event to DB
 exports.postOneEvent = async (req, res, next) => {
     try {
-      const eventEntry = new EventEntry({
+      const event = new Event({
         title: req.body.title,
         description: req.body.description,
         place: req.body.place,
         date: req.body.date,
         image: req.file ? req.file.filename : null,
       });
-      const createdEntry = await eventEntry.save();
-      res.json(createdEntry);
+      const createdEvent = await event.save();
+      res.json(createdEvent);
     } catch (error) {
       if (error.name === "ValidationError") {
         res.status(422);
@@ -117,26 +106,21 @@ exports.postOneEvent = async (req, res, next) => {
     }
   }
 
-// @route GET /:eventId
-// @desc Fetches one event
 exports.getOneEvent = async (req, res, next) => {
   try {
-    const event = await EventEntry.findById({ _id: req.params.eventId });
+    const event = await Event.findById({ _id: req.params.eventId });
     res.json(event);
   } catch (error) {
     next(error);
   }
 };
 
-// @route PUT /:eventId
-// @desc Updates event with or without image
-// upload.single("image"),
 exports.updateEvent = async (req, res, next) => {
   try {
-    const event = await EventEntry.findById({ _id: req.params.eventId });
+    const event = await Event.findById({ _id: req.params.eventId });
     // if no image upload
     if (!req.file) {
-      const updatedEvent = await EventEntry.findByIdAndUpdate(
+      const updatedEvent = await Event.findByIdAndUpdate(
         {
           _id: req.params.eventId,
         },
@@ -162,7 +146,7 @@ exports.updateEvent = async (req, res, next) => {
           }
         );
       }
-      const updatedEvent = await EventEntry.findByIdAndUpdate(
+      const updatedEvent = await Event.findByIdAndUpdate(
         {
           _id: req.params.eventId,
         },
@@ -178,7 +162,7 @@ exports.updateEvent = async (req, res, next) => {
     }
     // if event without image updating with image
     else {
-      const updatedEvent = await EventEntry.findByIdAndUpdate(
+      const updatedEvent = await Event.findByIdAndUpdate(
         {
           _id: req.params.eventId,
         },
@@ -197,8 +181,6 @@ exports.updateEvent = async (req, res, next) => {
   }
 };
 
-// @route DELETE /uploads/:filename
-// @desc  Deletes file
 exports.deleteFile = (req, res, next) => {
   gfs.remove(
     { filename: req.params.filename, root: "uploads" },
@@ -211,11 +193,9 @@ exports.deleteFile = (req, res, next) => {
   );
 };
 
-// @route DELETE /:eventId
-// @desc Deletes event as well as it's image
 exports.deleteEvent = async (req, res, next) => {
   try {
-    const event = await EventEntry.findById({ _id: req.params.eventId });
+    const event = await Event.findById({ _id: req.params.eventId });
     if (event.image) {
       gfs.remove(
         { filename: event.image, root: "uploads" },
@@ -226,7 +206,7 @@ exports.deleteEvent = async (req, res, next) => {
         }
       );
     }
-    const deletedEvent = await EventEntry.deleteOne({
+    const deletedEvent = await Event.deleteOne({
       _id: req.params.eventId,
     });
     res.json(deletedEvent);

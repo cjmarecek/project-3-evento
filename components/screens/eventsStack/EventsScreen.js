@@ -51,7 +51,7 @@ EventsScreen.propTypes = {
   fetchEventsReset: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.string,
+  error: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
