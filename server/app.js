@@ -9,7 +9,7 @@ const methodOverride = require("method-override");
 const app = express();
 const middlewares = require("./middlewares");
 const events = require("./Components/Events/eventsAPI");
-const user = require("./Components/User/userAPI");
+const users = require("./Components/Users/usersAPI");
 
 app.use(methodOverride("_method"));
 app.use(morgan("common"));
@@ -29,7 +29,7 @@ mongoose
 app.use("/api/events", events);
 
 // User router
-app.use("/api/user", user);
+app.use("/api/user", users);
 
 //Error handlers
 app.use(middlewares.notFound);
