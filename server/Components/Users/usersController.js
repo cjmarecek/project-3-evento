@@ -17,6 +17,7 @@ const conn = mongoose.createConnection(process.env.DATABASE_URL, {
   useFindAndModify: false,
 });
 mongoose.set("useUnifiedTopology", true);
+mongoose.set("useCreateIndex", true);
 
 //init gfs
 let gfs;
@@ -193,6 +194,38 @@ exports.imageUpdate = async (req, res, next) => {
       { image: req.file.filename }
     );
     res.json({ message: "Image upladed", image: req.file.filename });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.addUserDetails = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(
+      { _id: req.params.userId },
+      {
+        bio: req.body.bio ? req.body.bio : "",
+        website: req.body.website ? req.body.website : "",
+        location: req.body.location ? req.body.location : "",
+      }
+    );
+    res.json({ message: "User details uploaded successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUserDetails = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ username: req.params.username }).select({
+      _id: 0,
+      password: 0,
+      __v: 0,
+      updatedAt: 0,
+      createdAt: 0,
+    });
+    if (user) res.json({ user });
+    else res.status(404).json({ message: "User not found." });
   } catch (error) {
     next(error);
   }

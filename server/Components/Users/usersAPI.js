@@ -1,16 +1,18 @@
+// @router /api/user/
+// @desc signup ,login, delete, update, upload profile image, get
+//  details of user
 const express = require("express");
 const users = express.Router();
+
 const usersController = require("./usersController");
-const { checkAuth } = require("../../middlewares");
 const fileUpload = usersController.fileUpload.single("image");
+const { checkAuth } = require("../../middlewares");
 
 users.post("/signup", usersController.signup); // creates user
 users.post("/login", usersController.login); // login user
-users.delete("/:userId", usersController.deleteUser); // delete user
+users.delete("/:userId", checkAuth, usersController.deleteUser); // delete user
 users.put("/image", checkAuth, fileUpload, usersController.imageUpdate ); // changes profile picture
-// TODO:
-// app.post('/user', FBAuth, addUserDetails);
-// app.get('/user', FBAuth, getAuthenticatedUser);
-// app.get('/user/:handle', getUserDetails);
+users.post("/:userId", checkAuth, usersController.addUserDetails); // add user details
+users.get("/:username", usersController.getUserDetails) // get public user details
 
 module.exports = users;

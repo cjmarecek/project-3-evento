@@ -13,7 +13,10 @@ const userSchema = mongoose.Schema({
   password: requiredString,
   username: { type: String, required: true, unique: true},
   isAdmin: { type: Boolean, required: true },
-  image: { type: String, required: false}
+  image: { type: String, required: false},
+  bio: {type: String},
+  website: {type: String},
+  location: {type: String}
 });
 
 module.exports = mongoose.model("User", userSchema);
