@@ -2,12 +2,25 @@ const jwt = require('jsonwebtoken');
 
 const checkAuth = (req,  res, next) => {
   try {
-    const decoded = jwt.verify(req.body.token, process.env.JWT_KEY)
-    req.userData = decoded;
-    next()
-  } catch (error) {
-    res.status(401).json({ message: "Auth Failed"})
+    let token ;
+    if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer ')
+  ) {
+    token = req.headers.authorization.split('Bearer ')[1];
+  } else {
+    console.error('No token found');
+    return res.status(403).json({ error: 'Unauthorized.' });
   }
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+    console.log(decodedToken)
+    req.user = decodedToken;
+    next();
+} catch (error) {
+    return res.status(401).json({
+        message: 'Auth failed'
+    });
+}
 }
 
 // not found, general one middleware

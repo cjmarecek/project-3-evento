@@ -1,8 +1,52 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 const User = require("./usersModel");
 const { validateSignupData, validateLoginData } = require("./usersValidators");
+
+// @desc File upload imports
+const multer = require("multer");
+const crypto = require("crypto");
+const path = require("path");
+const Grid = require("gridfs-stream");
+const GridFsStorage = require("multer-gridfs-storage");
+
+const conn = mongoose.createConnection(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useFindAndModify: false,
+});
+mongoose.set("useUnifiedTopology", true);
+
+//init gfs
+let gfs;
+conn.once("open", () => {
+  // init stream
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection("profilePictures");
+});
+
+// Storage Engine
+const storage = new GridFsStorage({
+  url: process.env.DATABASE_URL,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString("hex") + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: "profilePictures",
+        };
+        resolve(fileInfo);
+      });
+    });
+  },
+});
+
+exports.fileUpload = multer({ storage: storage });
 
 exports.signup = async (req, res, next) => {
   const newUser = {
@@ -38,7 +82,7 @@ exports.signup = async (req, res, next) => {
       password: hash,
       username: newUser.username,
       isAdmin: false,
-      image: process.env.PROFILE_PICTURES_FOLDER + noImg,
+      image: null,
     });
     // saves to the database, if successfull returns token
     const savedUser = await user.save();
@@ -48,6 +92,8 @@ exports.signup = async (req, res, next) => {
           email: savedUser.email,
           userId: savedUser._id,
           username: savedUser.username,
+          isAdmin: false,
+          image: savedUser.image,
         },
         process.env.JWT_KEY,
         {
@@ -96,6 +142,8 @@ exports.login = async (req, res, next) => {
           email: userDoc[0].email,
           userId: userDoc[0]._id,
           username: userDoc[0].username,
+          isAdmin: userDoc[0].isAdmin,
+          image: userDoc[0].image,
         },
         process.env.JWT_KEY,
         {
@@ -124,5 +172,28 @@ exports.deleteUser = async (req, res, next) => {
       res.status(201).json({ message: "User already doesn't exist." });
   } catch (error) {
     return res.status(500).json({ error: error });
+  }
+};
+
+exports.imageUpdate = async (req, res, next) => {
+  try {
+    // delete image
+    const user = await User.findById({ _id: req.user.userId });
+    gfs.remove(
+      { filename: user.image, root: "profilePictures" },
+      (error, gridStore) => {
+        if (error) {
+          next(error);
+        }
+      }
+    );
+
+    await User.findByIdAndUpdate(
+      { _id: req.user.userId },
+      { image: req.file.filename }
+    );
+    res.json({ message: "Image upladed", image: req.file.filename });
+  } catch (error) {
+    next(error);
   }
 };
